@@ -9,7 +9,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
-@Service
+@Service("fakestoreProductService")
 public class FakestoreProductService implements ProductService {
     public Product getProductById(Long id) {
 
@@ -32,14 +32,22 @@ public class FakestoreProductService implements ProductService {
         List<FakeStoreProductDto> fakeStoreProductDtos =
                 restTemplate.getForObject("https://fakestoreapi.com/product",
                 List.class);
+        if(fakeStoreProductDtos == null) {
+            throw new ProductNotFoundException(0L, "No products found");
+        }
         List<Product> products = new ArrayList<>();
-        assert fakeStoreProductDtos != null;
         for(FakeStoreProductDto fakeStoreProductDto: fakeStoreProductDtos){
             products.add(convertfakeStoreProductDtotoProduct(fakeStoreProductDto));
         }
         return products;
 
     }
+
+    @Override
+    public Product createProduct(Product product) {
+        return null;
+    }
+
     private Product convertfakeStoreProductDtotoProduct(FakeStoreProductDto fakeStoreProductDto ) {
         Product product = new Product();
         product.setId(fakeStoreProductDto.getId());
@@ -47,7 +55,7 @@ public class FakestoreProductService implements ProductService {
         product.setDescription(fakeStoreProductDto.getDescription());
         product.setImage(fakeStoreProductDto.getImage());
         Category category = new Category();
-        category.setDescription(fakeStoreProductDto.getCategory());
+        //category.setDescription(fakeStoreProductDto.getCategory());
         product.setCategory(category);
 
         return product;

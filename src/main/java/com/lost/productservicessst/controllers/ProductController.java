@@ -1,14 +1,9 @@
 package com.lost.productservicessst.controllers;
 
-import ch.qos.logback.core.testUtil.RandomUtil;
-import com.lost.productservicessst.DTOs.FakeStoreProductDto;
 import com.lost.productservicessst.models.Product;
-import com.lost.productservicessst.services.FakestoreProductService;
 import com.lost.productservicessst.services.ProductService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -18,9 +13,9 @@ import java.util.List;
 @RequestMapping("/products")
 public class ProductController { // waiter
     //localhost:8080/products -> the request will reach to controller
-    private ProductService productService;
-    ProductController(FakestoreProductService fakeStoreProductService){
-        this.productService = fakeStoreProductService;
+    private final ProductService productService;
+    ProductController(@Qualifier("selfProductService") ProductService productService){
+        this.productService = productService;
     }
     @GetMapping("/{id}") //localhost:8080/products/10
     public Product getProductById(@PathVariable("id") Long id){
@@ -31,5 +26,8 @@ public class ProductController { // waiter
     public List<Product> getAllProducts(){
         return null;
     }
-
+    @PostMapping
+    public Product createProduct(@RequestBody Product product){
+        return productService.createProduct(product);
+    }
 }
